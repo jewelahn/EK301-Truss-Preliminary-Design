@@ -1,0 +1,38 @@
+%% Saving Truss Designs
+
+%% Practice Problem truss
+j = 8;
+M = 2*j - 3; %M is the total number of member forces
+x = 3; %x=number of support forces.
+unknowns = M + x; %Total unknowns in problem  
+
+
+C = [1 1 0 0 0 0 0 0 0 0 0 0 0;
+     0 1 1 1 0 0 0 0 0 0 0 0 0;
+     0 0 0 1 1 1 0 0 0 0 0 0 0;
+     1 0 1 0 1 0 1 1 0 0 0 0 0;
+     0 0 0 0 0 1 1 0 1 1 0 0 0;
+     0 0 0 0 0 0 0 0 0 1 1 1 0;
+     0 0 0 0 0 0 0 0 0 0 0 1 1];
+
+%Support forces: S1 = Ax, S2 = Ay, S3 = Hy
+%S_x are the hozitonal support forces, only 1st column(S1=Ax) is a horizontal force
+S_x = zeros(j,x); 
+S_x(1,1) = 1; %The only horizontal support force is from joint 1, 1st support force
+%Vertical support forces. S2=Ay and S3=Hy are vertical forces
+S_y = [0 1 0;
+       0 0 0;
+       0 0 0;
+       0 0 0;
+       0 0 0;
+       0 0 0;
+       0 0 0;
+       0 0 1];
+%X and Y vectors: distance of each joint from the Origin
+X = [0 0 4 4 8 8 12 12];
+Y = 
+
+
+save("practiceTruss.mat","j", "M" , "unknowns","C","S_x","S_y");
+
+%% 
