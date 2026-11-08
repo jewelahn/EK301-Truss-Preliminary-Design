@@ -20,9 +20,24 @@ filename = "practiceTruss.mat";
 load(filename);
 
 %% 2.4.2 Constructing the matrices
-%Pre-alloacted their size for now.
-e = zeros(2*j, M+x);
+% Pre-allocated their size for now.
+e = zeros(2*j, M);
 F = zeros(M+x,1);
 
-%Section 2.4.2: Calculating the position matrix e. 
+% Calculating the position matrix e. 
+S = cat(1, S_x, S_y); % the last x columns of e_hat
 
+for i = 1:M % columns
+    for l = 1:2*j % rows
+        if l <= j && C(l, i) == 1
+            coords = find(C(:, i) == 1);
+            point1 = [X(l), Y(l)];
+            point2 = [X(coords(2)), Y(coords(2))];
+            e(l, i) = 1;
+        elseif l > j && C(l-j, i) == 1 
+            e(l, i) = 1;
+        end
+    end
+end
+
+e_hat = cat(2, e, S);
