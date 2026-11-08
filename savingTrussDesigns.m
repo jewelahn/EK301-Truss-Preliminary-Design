@@ -15,6 +15,7 @@ C = [1 1 0 0 0 0 0 0 0 0 0 0 0; % 1
      0 0 0 0 0 0 0 0 0 0 0 1 1; % 7
      0 0 0 0 0 0 0 1 1 0 1 0 1]; % 8
    % 1 2 3 4 5 6 7 8 9 0 1 2 3
+   
 %Support forces: S1 = Ax, S2 = Ay, S3 = Hy
 %S_x are the hozitonal support forces, only 1st column(S1=Ax) is a horizontal force
 S_x = zeros(j,x); 

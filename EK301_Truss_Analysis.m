@@ -25,19 +25,31 @@ e = zeros(2*j, M);
 F = zeros(M+x,1);
 
 % Calculating the position matrix e. 
-S = cat(1, S_x, S_y); % the last x columns of e_hat
+S = cat(1, S_x, S_y); % the last x columns of e, support forces
+e = cat(2, e, S);
 
-for i = 1:M % columns
-    for l = 1:2*j % rows
-        if l <= j && C(l, i) == 1
-            coords = find(C(:, i) == 1);
-            point1 = [X(l), Y(l)];
-            point2 = [X(coords(2)), Y(coords(2))];
-            e(l, i) = 1;
-        elseif l > j && C(l-j, i) == 1 
-            e(l, i) = 1;
-        end
-    end
+[joint, member] = find(C == 1);
+
+for i = 1:M % columns (members)
+    joints = find(members == i); % joints corresponding to member
+    joint1 = joint(joints(2));
+    joint2 = joint(joints(1));
+
+    % coordinates of each joint
+    point1 = [X(joint1), Y(joint1)];
+    point2 = [X(joint2), Y(joint2)];
+
+    % distance calculations
+    x_dist = point1(1) - point2(1);
+    y_dist = point1(2) - point2(2);
+    r = norm(point1 - point2);
+
+    % inputting entries of e
+    e(joint2, i) = x_dist / r;
+    e(joint1, i) = -x_dist / r;
+    e(joint2 + j, i) = y_dist / r;
+    e(joint1 + j, 1) = y_dist / r;
 end
 
-e_hat = cat(2, e, S);
+% force calculation
+F = e \ L;

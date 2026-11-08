@@ -10,4 +10,10 @@ B = [1 2 3 4;
 [row, col] = find(C == 1);
 C_loc = cat(2, row, col);
 
-coords = find(C(:, 1))
+coords = find(C(:, 1));
+
+a = [4, 3, 2];
+b = [1, 2, 3];
+dist = norm(b-a);
+
+[c, d] = find(C == 1)
