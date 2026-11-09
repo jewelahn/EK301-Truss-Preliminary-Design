@@ -6,15 +6,15 @@ x = 3; %x=number of support forces.
 M = 2*j - x; %M is the total number of member forces
 
 
-C = [1 1 0 0 0 0 0 0 0 0 0 0 0; % 1
-     0 1 1 1 0 0 0 0 0 0 0 0 0; % 2
-     0 0 0 1 1 1 0 0 0 0 0 0 0; % 3
-     1 0 1 0 1 0 1 1 0 0 0 0 0; % 4
-     0 0 0 0 0 1 1 0 1 1 0 0 0; % 5
-     0 0 0 0 0 0 0 0 0 1 1 1 0; % 6
-     0 0 0 0 0 0 0 0 0 0 0 1 1; % 7
-     0 0 0 0 0 0 0 1 1 0 1 0 1]; % 8
-   % 1 2 3 4 5 6 7 8 9 0 1 2 3
+C = [1 1 0 0 0 0 0 0 0 0  0  0  0; % 1
+     0 1 1 1 0 0 0 0 0 0  0  0  0; % 2
+     0 0 0 1 1 1 0 0 0 0  0  0  0; % 3
+     1 0 1 0 1 0 1 1 0 0  0  0  0; % 4
+     0 0 0 0 0 1 1 0 1 1  0  0  0; % 5
+     0 0 0 0 0 0 0 1 1 0  1  0  1; % 6
+     0 0 0 0 0 0 0 0 0 1  1  1  0; % 7
+     0 0 0 0 0 0 0 0 0 0  0  1  1]; % 8
+   % 1 2 3 4 5 6 7 8 9 10 11 12 13
 %Support forces: S1 = Ax, S2 = Ay, S3 = Hy
 %S_x are the hozitonal support forces, only 1st column(S1=Ax) is a horizontal force
 S_x = zeros(j,x); 
@@ -29,12 +29,54 @@ S_y = [0 1 0;
        0 0 1;
        0 0 0];
 
-%X and Y vectors: distance of each joint from the Origin (joint A)
+%X and Y vectors: distance of each joint from the Origin (joint A) (in meters)
 X = [0 0 4 4 8 8 12 12]; % X distance A
 Y = [0 4 8 4 8 4 4 0]; % Y distance from A
 
-%Pre-allocating L: the load matrix
-L = zeros(2*j,1);
+%L: the load matrix
+L = zeros(2*j,1); %Pre-allocating zeroes
+%The only constant force/applied force is the 25 N load at D (vertical)
+L(j+4) = 25;
+
+save("practiceTrussNewtons.mat","j", "x","M","C","S_x","S_y","X","Y","L");
+
+%% Practice Problem truss (in ounces and inches)
+j = 8;
+x = 3; %x=number of support forces.
+M = 2*j - x; %M is the total number of member forces
+
+
+C = [1 1 0 0 0 0 0 0 0 0  0  0  0; % 1
+     0 1 1 1 0 0 0 0 0 0  0  0  0; % 2
+     0 0 0 1 1 1 0 0 0 0  0  0  0; % 3
+     1 0 1 0 1 0 1 1 0 0  0  0  0; % 4
+     0 0 0 0 0 1 1 0 1 1  0  0  0; % 5
+     0 0 0 0 0 0 0 1 1 0  1  0  1; % 6
+     0 0 0 0 0 0 0 0 0 1  1  1  0; % 7
+     0 0 0 0 0 0 0 0 0 0  0  1  1]; % 8
+   % 1 2 3 4 5 6 7 8 9 10 11 12 13
+%Support forces: S1 = Ax, S2 = Ay, S3 = Hy
+%S_x are the hozitonal support forces, only 1st column(S1=Ax) is a horizontal force
+S_x = zeros(j,x); 
+S_x(1,1) = 1; %The only horizontal support force is from joint 1, 1st support force
+%Vertical support forces. S2=Ay and S3=Hy are vertical forces
+S_y = [0 1 0;
+       0 0 0;
+       0 0 0;
+       0 0 0;
+       0 0 0;
+       0 0 0;
+       0 0 1;
+       0 0 0];
+
+%X and Y vectors: distance of each joint from the Origin (joint A) (in inches)
+X = [0 0 157.48 157.48 314.961 314.961 472.441 472.441]; % X distance A
+Y = [0 157.48 314.961 157.48 314.961 157.48 157.48 0]; % Y distance from A
+
+%L: the load matrix
+L = zeros(2*j,1); %Pre-allocating zeroes
+%The only constant force/applied force is the 89.924 oz load at D (vertical)
+L(j+4) = 89.924;
 
 save("practiceTruss.mat","j", "x","M","C","S_x","S_y","X","Y","L");
 
