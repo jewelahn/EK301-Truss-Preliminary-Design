@@ -1,0 +1,62 @@
+%% Truss Analysis Code, EK301
+% Group Members: Chris, Jewel, Amanda
+
+%% Code Split Tasks
+
+% Tasks
+% 1. Make matrices for calculations: connection matrix, x- and y- support
+% forces, joint location vectors, applied external load vector - jewel
+% 2. Set input variables: number of joints, members, support forces,
+% coordinates of joints, load forces - jewel
+% 3. Calculate the unit vector: (# of x- and y-components)x(# of members +
+% # of unknown support forces), calculate using the connection matrix (jewel will get started ig)
+% 4. Find values of unknown forces: F = e^-1(L)
+% 5. Find maximum theoretical load and uncertainty: F_b =
+% (C*L^-2.012)+-U_fit, F_m = R_m x W (R_m = F_m / W), F_crit = -F_b, F_c =
+% R_c x W_fail, F_b / F_m = 1 for critical member 
+
+%% Loading the .mat file
+filename = "practiceTruss.mat";
+load(filename);
+
+%% 2.4.2 Constructing the matrices
+% Pre-allocated their size for now.
+e = zeros(2*j, M);
+F = zeros(M+x,1);
+
+% Calculating the position matrix e. 
+S = cat(1, S_x, S_y); % the last x columns of e, support forces
+e = cat(2, e, S);
+
+[joint, member] = find(C == 1);
+
+for i = 1:M % columns (members)
+    joints = find(member == i); % joints corresponding to member
+    joint1 = joint(joints(2));
+    joint2 = joint(joints(1));
+
+    % coordinates of each joint
+    point1 = [X(joint1), Y(joint1)];
+    point2 = [X(joint2), Y(joint2)];
+
+    % distance calculations
+    x_dist = point1(1) - point2(1);
+    y_dist = point1(2) - point2(2);
+    r = norm(point1 - point2);
+
+    % inputting entries of e
+    e(joint2, i) = x_dist / r;
+    e(joint1, i) = -x_dist / r;
+    e(joint2 + j, i) = y_dist / r;
+    e(joint1 + j, i) = -y_dist / r;
+end
+
+% force calculation
+F = inv(e) * L;
+R_m = zeros(M + x, 1);
+
+for i = 1: M + x
+    R_m(i, 1) = F(i, 1) / sum(L); 
+end
+
+e

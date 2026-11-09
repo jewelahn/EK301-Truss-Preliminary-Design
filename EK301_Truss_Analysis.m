@@ -31,7 +31,7 @@ e = cat(2, e, S);
 [joint, member] = find(C == 1);
 
 for i = 1:M % columns (members)
-    joints = find(members == i); % joints corresponding to member
+    joints = find(member == i); % joints corresponding to member
     joint1 = joint(joints(2));
     joint2 = joint(joints(1));
 
@@ -48,8 +48,16 @@ for i = 1:M % columns (members)
     e(joint2, i) = x_dist / r;
     e(joint1, i) = -x_dist / r;
     e(joint2 + j, i) = y_dist / r;
-    e(joint1 + j, 1) = y_dist / r;
+    e(joint1 + j, i) = -y_dist / r;
 end
 
 % force calculation
-F = e \ L;
+F = inv(e) * L;
+
+% force ratios
+R_m = zeros(M + x, 1);
+
+for i = 1: M + x
+    R_m(i, 1) = F(i, 1) / sum(L); 
+end
+

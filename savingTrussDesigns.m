@@ -36,6 +36,7 @@ Y = [0 4 8 4 8 4 4 0]; % Y distance from A
 
 %Pre-allocating L: the load matrix
 L = zeros(2*j,1);
+L(j + 3, 1) = -25;
 
 save("practiceTruss.mat","j", "x","M","C","S_x","S_y","X","Y","L");
 
