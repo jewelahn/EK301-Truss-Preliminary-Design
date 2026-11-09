@@ -27,44 +27,33 @@ e = zeros(2*j, M);
 
 % Calculating the position matrix e. 
 S = cat(1, S_x, S_y); % the last x columns of e_hat
+e = cat(2, e, S);
 
-for i = 1:M % columns
-    for l = 1:2*j % rows
-        %Horizontal unit vectors (in rows 1 to j)
-        if l <= j && C(l, i) == 1
-            coords = find(C(:, i) == 1);
-            point1 = [X(l), Y(l)];
-            point2 = [X(coords(2)), Y(coords(2))];
-            dx = point2(1,1)-point1(1,1);
-            dy = point2(1,2)-point1(1,2);
-            r_1_2 = sqrt(dx^2 + dy^2);
-            if r_1_2 ~= 0
-                e(l,i) = dx/r_1_2; %only add this value if the position vector isn't 0
-                e(coords(2), i) = -dx/r_1_2; %Opposite unit vector components at the 2nd joint 
-            end %Otherwise, it would be 0, and we prefilled e with 0. 
-            
-            %Now e^hat magntiude is not 1 for trusses where length!=width
-            %and is negative when position vector dif_x is negative. 
-        %Vertical unit vectors (in rows j+1 to 2j)
-        elseif l > j && C(l-j, i) == 1 
-            coords = find(C(:, i) == 1);
-            point1 = [X(l-j), Y(l-j)];
-            point2 = [X(coords(2)), Y(coords(2))];
-            dx = point2(1,1)-point1(1,1);
-            dy = point2(1,2)-point1(1,2);
-            r_1_2 = sqrt(dx^2 + dy^2);
-            if r_1_2 ~= 0
-                e(l,i) = dy/r_1_2;
-                e(j+coords(2), i) = -dy/r_1_2;
-            end
-        end
-    end
+[joint, member] = find(C == 1);
+
+for i = 1:M % columns (members)
+    joints = find(member == i); % joints corresponding to member
+    joint1 = joint(joints(2));
+    joint2 = joint(joints(1));
+
+    % coordinates of each joint
+    point1 = [X(joint1), Y(joint1)];
+    point2 = [X(joint2), Y(joint2)];
+
+    % distance calculations
+    x_dist = point1(1) - point2(1);
+    y_dist = point1(2) - point2(2);
+    r = norm(point1 - point2);
+
+    % inputting entries of e
+    e(joint2, i) = x_dist / r;
+    e(joint1, i) = -x_dist / r;
+    e(joint2 + j, i) = y_dist / r;
+    e(joint1 + j, i) = -y_dist / r;
 end
 
-e_hat = cat(2, e, S);
-
 %% Task 4: Find values of unknown forces: F_m = e^-1(L)
-F_m = e_hat \ L; % A\B is equivalent to inv(A) * B, and is faster
+F_m = e \ L; % A\B is equivalent to inv(A) * B, and is faster
 
 %% Task 5: Maximum Theoretical Load F_b
 
@@ -89,7 +78,7 @@ end
 R_m = F_m(1:M) / abs(sum(L)); %using the sum of load forces as a token value of W to find values of R_m
 
 %Find maximum supported weight
-W_ref = sum(abs(L));% Reference applied load
+W_ref = abs(sum(L));% Reference applied load
 
 % Find members in compression
 compression = find(F_m(1:M) < 0);
@@ -106,3 +95,47 @@ criticalMember = compression(criticalIndex);
 fprintf('Maximum supported weight: %.2f N\n', W_max);
 fprintf('Critical member: %d\n', criticalMember);
 
+%% Writing to output
+output_file = [filename, '.txt'];
+fileID = fopen(output_file, 'w');
+
+fprintf(fileID, "EK301, Section A3, Group 9: Jewel A., Amanda W., Chris L., 11/13/2026.\n");
+
+fprintf(fileID, "Load: %d.3f oz\n", W_ref);
+
+% Printing member forces
+
+fprintf(fileID, "Member forces in oz:\n");
+for i = 1:M
+    load_info = sprintf("m%d: %.3f", i, abs(F_m(i)));
+    if F_m(i) < 0
+        fprintf(fileID, load_info, '(C)\n');
+    else
+        fprintf(fileID, load_info, '(T)\n');
+    end
+end
+
+% Printing reaction forces
+
+fprintf(fileID, "Reaction forces in oz:\n");
+num_Sx = find(S_x == 1);
+num_Sy = find(S_y == 1);
+Sx = length(num_Sx);
+Sy = length(num_Sy);
+
+for i = M + 1: M + Sx
+    fprintf(fileID, "Sx%d: %.3f", i - M, F_m(i));
+end
+
+for i = M + Sx + 1: M + Sx + Sy
+    fprintf(fileID, "Sy%d: %.3f", i - M, F_m(i));
+end
+
+% Printing cost
+
+cost = abs(sum(lengths)) + 10*j;
+fprintf(fileID, "Cost of truss: %.2f", cost);
+
+% Printing theoretical max load / cost ratio
+
+fprintf("Theoretical max load / cost ratio in oz / $: %.4f", W_max / cost);
