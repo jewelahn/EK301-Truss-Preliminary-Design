@@ -1,8 +1,8 @@
 %% Saving Truss Designs
 
-%% Practice Problem truss
+%% Practice Problem truss (In Newtons and Meters)
 j = 8;
-x = 3; %x=number of support forces.
+x = 4; %x=number of support forces.
 M = 2*j - x; %M is the total number of member forces
 
 
@@ -80,4 +80,7 @@ L(j+4) = 89.924;
 
 save("practiceTruss.mat","j", "x","M","C","S_x","S_y","X","Y","L");
 
-%% Prelim Design 1:
+%% Prelim Design 1: The hexagon
+j = 9; % j = number of joints
+x = 4; %x=number of support forces.
+M = 16; %M is the total number of member forces
