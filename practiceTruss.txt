@@ -1,0 +1,32 @@
+EK301, Section A3, Group 9:
+Jewel Ahn, Amanda Wong, Chris Lee, 
+Date: 11/13/2026.
+
+Analysis of: practiceTruss 
+
+Load: 89.924 oz
+Member forces in oz:
+m1: 0.000 (T)
+m2: 59.949 (C)
+m3: 59.949 (T)
+m4: 84.781 (C)
+m5: 59.949 (T)
+m6: 59.949 (C)
+m7: 42.390 (T)
+m8: 29.974 (T)
+m9: 0.000 (T)
+m10: 42.390 (C)
+m11: 29.974 (T)
+m12: 0.000 (T)
+m13: 0.000 (T)
+
+Reaction forces in oz:
+Sx1: 0.000 
+Sy2: 59.949 
+Sy3: 29.975 
+
+Uncertainty U_wmax: 0.092 
+Percent of Uncertainty: 4.05 
+
+Cost of truss: $2453.40 
+Theoretical max load / cost ratio in oz / $: 0.0007 

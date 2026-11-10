@@ -10,15 +10,17 @@
 % coordinates of joints, load forces - jewel
 % 3. Calculate the unit vector: (# of x- and y-components)x(# of members +
 % # of unknown support forces), calculate using the connection matrix (jewel will get started ig)
-% 4. Find values of unknown forces: F_m = e^-1(L)
-% 5. Find maximum theoretical load and Critical member
+% 4. Find values of unknown forces: F_m = e^-1(L), 
+% 5. Find the maximum theoretical load, Critical member, and uncertainty
 % F_b =(C*L^-2.012) +- U_fit, 
-% F_crit = -F_b, F_c = R_c x W_fail, F_b / F_m = 1 for critical member 
-% 6. Find uncertainty:
+% F_crit = -F_b, 
+% F_c = R_c x W_fail, 
+% F_b / F_m = 1 for critical member
 % F_m = R_m x W (R_m = F_m / W),
+% 6. Write to output file
 
 %% Task 2: Loading the .mat file
-filename = "practiceTruss.mat";
+filename = "practiceTruss.mat"; %Change this filename to whichever truss we are analyzing right now
 load(filename);
 
 %% Task 3: Constructing the matrices
@@ -55,7 +57,7 @@ end
 %% Task 4: Find values of unknown forces: F_m = e^-1(L)
 F_m = e \ L; % A\B is equivalent to inv(A) * B, and is faster
 
-%% Task 5: Maximum Theoretical Load F_b
+%Maximum Theoretical Load F_b
 
 %lengths: a 13x1 column vector that holds the length of each member
 lengths = zeros(M,1);
@@ -74,68 +76,72 @@ for i = 1:M
     F_b(i) = 3391.3*(lengths(i)^-2.012) + U_fit;
 end
 
-%% Finding the critical member and Max Load W_max
+%% Task 5: Finding the critical member and Max Load W_max
 R_m = F_m(1:M) / abs(sum(L)); %using the sum of load forces as a token value of W to find values of R_m
 
 %Find maximum supported weight
 W_ref = abs(sum(L));% Reference applied load
+compression = find(F_m(1:M) < 0);%Members in compression
+W_max_members = F_b(compression) ./ abs(R_m(compression)); % Maximum weight each compressive member can support
 
-% Find members in compression
-compression = find(F_m(1:M) < 0);
-
-% Maximum weight each compressive member can support
-W_max_members = F_b(compression) ./ abs(R_m(compression));
-
-% Find the smallest maximum weight
+%W_max is the smallest maximum weight
 [W_max, criticalIndex] = min(W_max_members);
 
-% Identify the critical member
+%Critical member is the member that corresponds with the smallest W_max
 criticalMember = compression(criticalIndex);
 
 fprintf('Maximum supported weight: %.2f N\n', W_max);
 fprintf('Critical member: %d\n', criticalMember);
 
-%% Writing to output
-output_file = [filename, '.txt'];
+% Finding Uncertainty
+U_wmax = abs((1 / R_m(criticalMember))* U_fit); %U_wmax = R_m * W_max, where R_m is the constant for the linear relationship
+
+percent_Uncertain = (abs(U_wmax - W_max)/W_max)*100;
+
+%% Task 6: Writing to output
+[filepath, name, ext] = fileparts(filename);
+output_file = name + '.txt';
 fileID = fopen(output_file, 'w');
 
-fprintf(fileID, "EK301, Section A3, Group 9: Jewel A., Amanda W., Chris L., 11/13/2026.\n");
-
-fprintf(fileID, "Load: %d.3f oz\n", W_ref);
+fprintf(fileID, "EK301, Section A3, Group 9:\nJewel Ahn, Amanda Wong, Chris Lee, \nDate: 11/13/2026.\n\n");
+fprintf(fileID,"Analysis of: %s \n\n",name);
+fprintf(fileID, "Load: %.3f oz\n", W_ref);
 
 % Printing member forces
-
 fprintf(fileID, "Member forces in oz:\n");
 for i = 1:M
-    load_info = sprintf("m%d: %.3f", i, abs(F_m(i)));
     if F_m(i) < 0
-        fprintf(fileID, load_info, '(C)\n');
+        fprintf(fileID, "m%d: %.3f (C)\n", i, abs(F_m(i)));
     else
-        fprintf(fileID, load_info, '(T)\n');
+        fprintf(fileID, "m%d: %.3f (T)\n", i, abs(F_m(i)));
     end
 end
 
 % Printing reaction forces
-
-fprintf(fileID, "Reaction forces in oz:\n");
+fprintf(fileID, "\nReaction forces in oz:\n");
 num_Sx = find(S_x == 1);
 num_Sy = find(S_y == 1);
 Sx = length(num_Sx);
 Sy = length(num_Sy);
 
 for i = M + 1: M + Sx
-    fprintf(fileID, "Sx%d: %.3f", i - M, F_m(i));
+    fprintf(fileID, "Sx%d: %.3f \n", i - M, F_m(i));
 end
 
 for i = M + Sx + 1: M + Sx + Sy
-    fprintf(fileID, "Sy%d: %.3f", i - M, F_m(i));
+    fprintf(fileID, "Sy%d: %.3f \n", i - M, F_m(i));
 end
 
-% Printing cost
+% Printing Uncertainty
+fprintf(fileID, "\nUncertainty U_wmax: %.3f \n",U_wmax-U_fit);
+fprintf(fileID, "Percent of Uncertainty: %.2f \n", percent_Uncertain);
 
+% Printing cost
 cost = abs(sum(lengths)) + 10*j;
-fprintf(fileID, "Cost of truss: %.2f", cost);
+fprintf(fileID, "\nCost of truss: $%.2f \n", cost);
 
 % Printing theoretical max load / cost ratio
 
-fprintf("Theoretical max load / cost ratio in oz / $: %.4f", W_max / cost);
+fprintf(fileID, "Theoretical max load / cost ratio in oz / $: %.4f \n", W_max / cost);
+
+fclose(fileID);
