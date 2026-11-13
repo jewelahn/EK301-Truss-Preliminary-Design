@@ -66,7 +66,7 @@ for i = 1:M
     coords = find(C(:,i) == 1);
     dx = X(coords(2)) - X(coords(1));
     dy = Y(coords(2)) - Y(coords(1));
-    lengths(i) = sqrt(dx^2 + dy^2); %Same equation for finidng r_1_2 in the e^ matrix
+    lengths(i) = sqrt(dx^2 + dy^2); % Same equation for findng r_1_2 in the e^ matrix
 end
 
 F_b = zeros(M,1);
@@ -77,17 +77,17 @@ for i = 1:M
 end
 
 %% Task 5: Finding the critical member and Max Load W_max
-R_m = F_m(1:M) / abs(sum(L)); %using the sum of load forces as a token value of W to find values of R_m
+R_m = F_m(1:M) / abs(sum(L)); % using the sum of load forces as a token value of W to find values of R_m
 
-%Find maximum supported weight
+% Find maximum supported weight
 W_ref = abs(sum(L));% Reference applied load
 compression = find(F_m(1:M) < 0);%Members in compression
 W_max_members = F_b(compression) ./ abs(R_m(compression)); % Maximum weight each compressive member can support
 
-%W_max is the smallest maximum weight
+% W_max is the smallest maximum weight
 [W_max, criticalIndex] = min(W_max_members);
 
-%Critical member is the member that corresponds with the smallest W_max
+% Critical member is the member that corresponds with the smallest W_max
 criticalMember = compression(criticalIndex);
 
 fprintf('Maximum supported weight: %.2f oz\n', W_max);
