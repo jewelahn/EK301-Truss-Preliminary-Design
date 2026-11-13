@@ -94,7 +94,9 @@ fprintf('Maximum supported weight: %.2f oz\n', W_max);
 fprintf('Critical member: %d\n', criticalMember);
 
 % Finding Uncertainty
-U_wmax = abs((1 / R_m(criticalMember))* U_fit); %U_wmax = R_m * W_max, where R_m is the constant for the linear relationship
+W_max_mat = W_max .* ones(length(compression), 1);
+U_wmax_members = abs(W_max_mat ./ W_max_members) * U_fit; %U_wmax = (W_max / F_max) * U_f
+U_wmax = U_wmax_members(criticalIndex);
 
 percent_Uncertain = (abs(U_wmax - W_max)/W_max)*100;
 

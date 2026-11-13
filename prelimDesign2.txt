@@ -4,24 +4,24 @@ Date: 11/13/2026.
 
 Analysis of: prelimDesign2 
 
-Load: 30.000 oz
+Load: 37.150 oz
 Member forces in oz:
-m1: 10.599 (T)
-m2: 15.748 (C)
-m3: 1.042 (C)
-m4: 10.650 (T)
-m5: 19.148 (T)
-m6: 24.939 (C)
+m1: 13.126 (T)
+m2: 19.502 (C)
+m3: 1.291 (C)
+m4: 13.189 (T)
+m5: 23.712 (T)
+m6: 30.883 (C)
 m7: 0.000 
-m8: 6.713 (T)
-m9: 26.272 (T)
-m10: 24.939 (C)
-m11: 20.049 (C)
+m8: 8.313 (T)
+m9: 32.533 (T)
+m10: 30.883 (C)
+m11: 24.827 (C)
 
 Reaction forces in oz:
 Sx1: 0.000 
-Sy2: 11.648 
-Sy3: 18.352 
+Sy2: 14.424 
+Sy3: 22.726 
 
 Cost of truss: $189.67 
 Theoretical max load / cost ratio in oz / $: 0.1959 

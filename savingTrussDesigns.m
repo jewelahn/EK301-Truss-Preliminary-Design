@@ -154,7 +154,7 @@ Y = [0 10 0 1 10 10 0];
 
 % load matrix
 L = zeros(2*j, 1);
-L(j+4, 1) = 30; % 30 ounces loaded onto joint 4
+L(j+4, 1) = 37.15; % 30 ounces loaded onto joint 4
 
 % saving variables
 save("prelimDesign2.mat", "j", "x", "M", "C", "S_x", "S_y", "X", "Y", "L");
