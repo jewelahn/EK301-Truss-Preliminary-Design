@@ -20,7 +20,7 @@
 % 6. Write to output file
 
 %% Task 2: Loading the .mat file
-filename = "prelimDesign2.mat"; %Change this filename to whichever truss we are analyzing right now
+filename = "prelimDesign1.mat"; %Change this filename to whichever truss we are analyzing right now
 load(filename);
 
 %% Task 3: Constructing the matrices
