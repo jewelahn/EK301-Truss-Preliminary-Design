@@ -20,7 +20,7 @@
 % 6. Write to output file
 
 %% Task 2: Loading the .mat file
-filename = "practiceTruss.mat"; %Change this filename to whichever truss we are analyzing right now
+filename = "prelimDesign2.mat"; %Change this filename to whichever truss we are analyzing right now
 load(filename);
 
 %% Task 3: Constructing the matrices
@@ -57,10 +57,10 @@ end
 %% Task 4: Find values of unknown forces: F_m = e^-1(L)
 F_m = e \ L; % A\B is equivalent to inv(A) * B, and is faster
 
-%Maximum Theoretical Load F_b
+% Maximum Theoretical Load F_b
 
-%lengths: a 13x1 column vector that holds the length of each member
-lengths = zeros(M,1);
+% lengths: a 13x1 column vector that holds the length of each member
+lengths = zeros(M, 1);
 
 for i = 1:M
     coords = find(C(:,i) == 1);
@@ -90,7 +90,7 @@ W_max_members = F_b(compression) ./ abs(R_m(compression)); % Maximum weight each
 %Critical member is the member that corresponds with the smallest W_max
 criticalMember = compression(criticalIndex);
 
-fprintf('Maximum supported weight: %.2f N\n', W_max);
+fprintf('Maximum supported weight: %.2f oz\n', W_max);
 fprintf('Critical member: %d\n', criticalMember);
 
 % Finding Uncertainty
@@ -110,7 +110,9 @@ fprintf(fileID, "Load: %.3f oz\n", W_ref);
 % Printing member forces
 fprintf(fileID, "Member forces in oz:\n");
 for i = 1:M
-    if F_m(i) < 0
+    if int32(F_m(i)) == 0
+        fprintf(fileID, "m%d: %.3f \n", i, abs(F_m(i)));
+    elseif F_m(i) < 0
         fprintf(fileID, "m%d: %.3f (C)\n", i, abs(F_m(i)));
     else
         fprintf(fileID, "m%d: %.3f (T)\n", i, abs(F_m(i)));
@@ -131,10 +133,6 @@ end
 for i = M + Sx + 1: M + Sx + Sy
     fprintf(fileID, "Sy%d: %.3f \n", i - M, F_m(i));
 end
-
-% Printing Uncertainty
-fprintf(fileID, "\nUncertainty U_wmax: %.3f \n",U_wmax-U_fit);
-fprintf(fileID, "Percent of Uncertainty: %.2f \n", percent_Uncertain);
 
 % Printing cost
 cost = abs(sum(lengths)) + 10*j;

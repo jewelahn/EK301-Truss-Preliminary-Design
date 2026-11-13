@@ -87,16 +87,15 @@ j = 8;% j = mumbers of joints
 x = 3; %x=number of support forces.
 M = 2*j -x; %M is the total number of member forces
 
-C = [1 1 0 0 0 0 0 0 0 0  0  0  0  0  0  1; % 1
-     1 0 1 1 0 0 0 0 0 0  0  0  0  0  0  0; %j2
-     0 0 0 1 1 1 0 0 0 0  0  0  0  0  0  0; %j3
-     0 0 0 0 0 1 1 0 0 0  0  0  0  0  0  0; %j4
-     0 0 0 0 0 0 0 0 0 1  1  1  0  0  0  0; %j5
-     0 0 0 0 0 0 0 0 0 0  0  1  1  0  1  0; %j6
-     0 0 0 0 0 0 0 0 0 0  0  0  0  1  1  1; %j7
-     0 1 1 0 1 0 0 1 1 0  1  0  1  1  0  0; %j8
-     0 0 0 0 0 1 1 0 1 0  0  0  0  0  0  0]; %j9
-  %M 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+C = [1 1 0 0 0 0 0 0 0 0  0  0  1; % 1
+     1 0 1 1 0 0 0 0 0 0  0  0  0; %j2
+     0 0 0 1 1 1 0 0 0 0  0  0  0; %j3
+     0 0 0 0 0 1 1 0 0 0  0  0  0; %j4
+     0 0 0 0 0 0 0 1 1 0  0  0  0; %j5
+     0 0 0 0 0 0 0 0 1 1  1  0  0; %j6
+     0 0 0 0 0 0 0 0 0 0  1  1  1; %j7
+     0 1 1 0 1 0 1 1 1 1  0  1  0];%j8
+  %M 1 2 3 4 5 6 7 8 9 10 11 12 13
 
 %Support forces: S1 = J1x, S2 = J1y, S3 = J6y
 %S_x are the hozitonal support forces, S1 is the only horizontal force
@@ -105,17 +104,17 @@ S_x(1,1) = 1;
 %Vertical support forces. S2=J1y and S3=J6y are vertical forces
 S_y = zeros(j,x);
 S_y(1,2) = 1;
-S_y(6,3) = 1;
+S_y(7,3) = 1;
 
 %X and Y vectors: distance of each joint from the Origin (joint1) (in inches)
-X = [3 0 3  9  12 9 6 6 6]; % X distance J1
-Y = [0 6 12 12 6  0 0 6 12]; % Y distance from J1
+X = [3 0 3  6  9 12 9 6]; % X distance J1
+Y = [0 6 12 12 12  6 0 6]; % Y distance from J1
 
 %L: the load matrix
 L = zeros(2*j,1); %Pre-allocating zeroes
-%Loads forces: 80 oz at J3 (vertical), 50 oz at J4 (vertical)
+%Loads forces: 80 oz at J3 (vertical), 50 oz at J5 (vertical)
 L(j+3) = 80;
-L(j+4) = 50;
+L(j+5) = 50;
 
 save("prelimDesign1.mat","j", "x","M","C","S_x","S_y","X","Y","L");
 
@@ -155,3 +154,39 @@ L(j+7) = 90;
 L(j+4) = 40;
 
 save("prelimDesign2.mat","j", "x","M","C","S_x","S_y","X","Y","L");
+
+%% Preliminary Design 2: Asymmetrical Trapezoid
+j = 7; % joints
+x = 3; % support forces
+M = 2*j - x; % members
+
+% connection matrix
+C = [1 1 0 0 0 0 0 0 0 0 0;
+     0 1 1 0 1 1 0 0 0 0 0;
+     1 0 1 1 0 0 0 0 0 0 0;
+     0 0 0 1 1 0 1 1 1 0 0;
+     0 0 0 0 0 1 1 0 0 1 0;
+     0 0 0 0 0 0 0 0 1 1 1;
+     0 0 0 0 0 0 0 1 0 0 1]
+
+% support forces
+% s_x
+S_x = zeros(j, x);
+S_x(1, 1) = 1;
+
+% s_y
+S_y = zeros(j, x);
+S_y(1, 1) = 1;
+S_y(7, 1) = 1;
+
+% coordinates
+% x
+   % 1  2    3     4     5     6    7
+X = [0 12.3 12.3 20.85 20.85 29.86 31];
+
+% y 
+Y = [0 9.9 0 1 9.9 9.9 0];
+
+% load matrix
+L = zeros(2*j, 1);
+L(j+4, 1) = 30; % 30 ounces loaded onto joint 4
