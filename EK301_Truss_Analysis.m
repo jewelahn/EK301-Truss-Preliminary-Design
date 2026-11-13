@@ -20,7 +20,7 @@
 % 6. Write to output file
 
 %% Task 2: Loading the .mat file
-filename = "practiceTruss.mat"; %Change this filename to whichever truss we are analyzing right now
+filename = "prelimDesign2.mat"; %Change this filename to whichever truss we are analyzing right now
 load(filename);
 
 %% Task 3: Constructing the matrices
@@ -57,16 +57,16 @@ end
 %% Task 4: Find values of unknown forces: F_m = e^-1(L)
 F_m = e \ L; % A\B is equivalent to inv(A) * B, and is faster
 
-%Maximum Theoretical Load F_b
+% Maximum Theoretical Load F_b
 
-%lengths: a 13x1 column vector that holds the length of each member
-lengths = zeros(M,1);
+% lengths: a 13x1 column vector that holds the length of each member
+lengths = zeros(M, 1);
 
 for i = 1:M
     coords = find(C(:,i) == 1);
     dx = X(coords(2)) - X(coords(1));
     dy = Y(coords(2)) - Y(coords(1));
-    lengths(i) = sqrt(dx^2 + dy^2); %Same equation for finidng r_1_2 in the e^ matrix
+    lengths(i) = sqrt(dx^2 + dy^2); % Same equation for findng r_1_2 in the e^ matrix
 end
 
 F_b = zeros(M,1);
@@ -77,24 +77,26 @@ for i = 1:M
 end
 
 %% Task 5: Finding the critical member and Max Load W_max
-R_m = F_m(1:M) / abs(sum(L)); %using the sum of load forces as a token value of W to find values of R_m
+R_m = F_m(1:M) / abs(sum(L)); % using the sum of load forces as a token value of W to find values of R_m
 
-%Find maximum supported weight
+% Find maximum supported weight
 W_ref = abs(sum(L));% Reference applied load
 compression = find(F_m(1:M) < 0);%Members in compression
 W_max_members = F_b(compression) ./ abs(R_m(compression)); % Maximum weight each compressive member can support
 
-%W_max is the smallest maximum weight
+% W_max is the smallest maximum weight
 [W_max, criticalIndex] = min(W_max_members);
 
-%Critical member is the member that corresponds with the smallest W_max
+% Critical member is the member that corresponds with the smallest W_max
 criticalMember = compression(criticalIndex);
 
-fprintf('Maximum supported weight: %.2f N\n', W_max);
+fprintf('Maximum supported weight: %.2f oz\n', W_max);
 fprintf('Critical member: %d\n', criticalMember);
 
 % Finding Uncertainty
-U_wmax = abs((1 / R_m(criticalMember))* U_fit); %U_wmax = R_m * W_max, where R_m is the constant for the linear relationship
+W_max_mat = W_max .* ones(length(compression), 1);
+U_wmax_members = abs(W_max_mat ./ W_max_members) * U_fit; %U_wmax = (W_max / F_max) * U_f
+U_wmax = U_wmax_members(criticalIndex);
 
 percent_Uncertain = (abs(U_wmax - W_max)/W_max)*100;
 
@@ -110,7 +112,9 @@ fprintf(fileID, "Load: %.3f oz\n", W_ref);
 % Printing member forces
 fprintf(fileID, "Member forces in oz:\n");
 for i = 1:M
-    if F_m(i) < 0
+    if int32(F_m(i)) == 0
+        fprintf(fileID, "m%d: %.3f \n", i, abs(F_m(i)));
+    elseif F_m(i) < 0
         fprintf(fileID, "m%d: %.3f (C)\n", i, abs(F_m(i)));
     else
         fprintf(fileID, "m%d: %.3f (T)\n", i, abs(F_m(i)));
@@ -131,10 +135,6 @@ end
 for i = M + Sx + 1: M + Sx + Sy
     fprintf(fileID, "Sy%d: %.3f \n", i - M, F_m(i));
 end
-
-% Printing Uncertainty
-fprintf(fileID, "\nUncertainty U_wmax: %.3f \n",U_wmax-U_fit);
-fprintf(fileID, "Percent of Uncertainty: %.2f \n", percent_Uncertain);
 
 % Printing cost
 cost = abs(sum(lengths)) + 10*j;
