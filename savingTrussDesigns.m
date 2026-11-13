@@ -83,40 +83,37 @@ L(j+4) = 25;
 save("practiceTrussNewtons.mat","j", "x","M","C","S_x","S_y","X","Y","L");
 
 
-%% Prelim Design 1: The Hexagon
-j = 8; % j = mumbers of joints
+%% Prelim Design 1: Lopsided Structure
+j = 7; % j = mumbers of joints
 x = 3; %x=number of support forces.
-M = 2*j -x; %M is the total number of member forces
+M = 2*j - x; %M is the total number of member forces
 
-C = [1 1 0 0 0 0 0 0 0 0  0  0  0; % 1
-     0 1 1 1 1 0 0 0 0 0  0  0  0; % 2
-     0 0 0 1 0 0 1 0 1 0  0  0  0; % 3
-     0 0 0 0 0 0 1 1 0 0  1  1  0; % 4
-     0 0 0 0 0 0 0 0 0 0  0  1  1; % 5
-     0 0 0 0 0 0 0 0 0 1  1  0  1; % 6
-     0 0 0 0 1 1 0 1 1 1  0  0  0; % 7
-     1 0 1 0 0 1 0 0 0 0  0  1  1];% 8
-   % 1 2 3 4 5 6 7 8 9 10 11 12 13
+C = [1 1 0 0 0 0 0 0 0 0  0; % 1
+     0 1 1 1 1 0 0 0 0 0  0; % 2
+     0 0 0 1 0 0 1 1 0 0  0; % 3
+     0 0 0 0 0 0 1 0 1 1  0; % 4
+     0 0 0 0 0 0 0 0 0 1  1; % 5
+     0 0 0 0 1 1 0 1 1 0  1; % 6
+     1 0 1 0 0 1 0 0 0 0  0];% 7
+  %M 1 2 3 4 5 6 7 8 9 10 11
 
-%Support forces: S1 = J1x, S2 = J1y, S3 = J5x, S4 = J5y
-%S_x are the hozitonal support forces, S1 and S3 (1st and 3rd columns)
-S_x = zeros(j,x); 
-S_x(1,1) = 1; 
-S_x(5,3) = 1;
-%Vertical support forces. S2=J1y and S4=J5y are vertical forces
+%Support forces: S1 = J5x, S2 = J1y, S3 = J5y
+%S_x are the hozitonal support forces, Only S1 is hizrontal
+S_x = zeros(j,x);
+S_x(5,1) = 1; 
+%Vertical support forces. S2=J1y and S3=J4y are vertical forces
 S_y = zeros(j,x);
 S_y(1,2) = 1;
-S_y(5,4) = 1;
+S_y(5,3) = 1;
 
 %X and Y vectors: distance of each joint from the Origin (joint1) (in inches)
-X = [0 2 6 10 12 10 6 2]; % X distance J1
-Y = [0 6 6 6  0  0  0 0]; % Y distance from J1
+X = [0 10.226 19.039 28.558 30 20.113 10.226]; % X distance J1
+Y = [0 9.562  11.442 8.377  0  1.5    0]; % Y distance from J1
 
 %L: the load matrix
 L = zeros(2*j,1); %Pre-allocating zeroes
-%Loads forces: 90 oz at J7 (vertical), 40 oz at J4 (vertical)
-L(j+7) = 90;
-L(j+4) = 40;
+%Loads forces: 30 oz at J6 (vertical)
+L(j+6) = 30;
 
 save("prelimDesign1.mat","j", "x","M","C","S_x","S_y","X","Y","L");
 

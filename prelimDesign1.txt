@@ -1,0 +1,27 @@
+EK301, Section A3, Group 9:
+Jewel Ahn, Amanda Wong, Chris Lee, 
+Date: 11/13/2026.
+
+Analysis of: prelimDesign1 
+
+Load: 30.000 oz
+Member forces in oz:
+m1: 10.574 (T)
+m2: 14.476 (C)
+m3: 1.604 (C)
+m4: 19.991 (C)
+m5: 11.584 (T)
+m6: 10.695 (T)
+m7: 21.770 (C)
+m8: 10.906 (T)
+m9: 22.140 (T)
+m10: 20.956 (C)
+m11: 3.596 (T)
+
+Reaction forces in oz:
+Sx1: 0.000 
+Sy2: 9.887 
+Sy3: 20.113 
+
+Cost of truss: $184.95 
+Theoretical max load / cost ratio in oz / $: 0.2049 
