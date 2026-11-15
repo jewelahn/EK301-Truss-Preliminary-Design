@@ -20,7 +20,7 @@
 % 6. Write to output file
 
 %% Task 2: Loading the .mat file
-filename = "practiceTruss.mat"; %Change this filename to whichever truss we are analyzing right now
+filename = "prelimDesign1.mat"; %Change this filename to whichever truss we are analyzing right now
 load(filename);
 
 %% Task 3: Constructing the matrices
@@ -73,7 +73,7 @@ F_b = zeros(M,1);
 U_fit = 1.52;
 
 for i = 1:M
-    F_b(i) = 3391.3*(lengths(i)^-2.012);
+    F_b(i) = 3391.3*(lengths(i)^-2.012) + U_fit;
 end
 
 %% Task 5: Finding the critical member and Max Load W_max
@@ -94,8 +94,11 @@ fprintf('Maximum supported weight: %.2f oz\n', W_max);
 fprintf('Critical member: %d\n', criticalMember);
 
 % Finding Uncertainty
-U_wmax = U_fit / abs(R_m(criticalMember));
-percent_Uncertain = (U_wmax / W_max) * 100;
+W_max_mat = W_max .* ones(length(compression), 1);
+U_wmax_members = abs(W_max_mat ./ W_max_members) * U_fit; %U_wmax = (W_max / F_max) * U_f
+U_wmax = U_wmax_members(criticalIndex);
+
+percent_Uncertain = (abs(U_wmax - W_max)/W_max)*100;
 
 %% Task 6: Writing to output
 [filepath, name, ext] = fileparts(filename);
@@ -136,18 +139,9 @@ end
 % Printing cost
 cost = abs(sum(lengths)) + 10*j;
 fprintf(fileID, "\nCost of truss: $%.2f \n", cost);
-% Printing first member to buckle
-fprintf(fileID, "\nCritical member (first to buckle): m%d\n", criticalMember);
-fprintf(fileID, "Length of critical member: %.3f in\n", lengths(criticalMember));
-fprintf(fileID, "Predicted buckling strength: %.3f +/- %.2f oz\n", F_b(criticalMember), U_fit);
-
-% Printing maximum load
-fprintf(fileID, "\nMaximum load: %.2f +/- %.2f oz (%.1f%%)\n", W_max, U_wmax, percent_Uncertain);
-
-% Printing cost
-cost = abs(sum(lengths)) + 10*j; % $1 per inch of member + $10 per joint
-fprintf(fileID, "\nTotal member length: %.3f in\n", sum(lengths));
-fprintf(fileID, "Cost of truss: $%.2f \n", cost);
 
 % Printing theoretical max load / cost ratio
-fprintf(fileID, "Theoretical max load / cost ratio in oz / $: %.4f +/- %.4f \n", W_max / cost, U_wmax / cost);
+
+fprintf(fileID, "Theoretical max load / cost ratio in oz / $: %.4f \n", W_max / cost);
+
+fclose(fileID);
